@@ -1,0 +1,82 @@
+{
+  "owner_email": "you@example.com",
+  "mailing_address": "[Your business mailing address]",
+  "timezone": "America/Los_Angeles",
+
+  "imap_host": "mail.privateemail.com",
+  "imap_port": 993,
+  "smtp_host": "mail.privateemail.com",
+  "smtp_port": 465,
+  "drafts_folder": "Drafts",
+  "sent_folder": "Sent",
+  "processed_folder": "Processed",
+
+  "own_domains": ["aiajacademy.io", "aiajsolutions.com", "aiinreallife.com"],
+
+  "brands": {
+    "academy": {
+      "name": "AiAj Academy",
+      "mailbox": "support@aiajacademy.io",
+      "password_env": "PW_ACADEMY",
+      "offer": "[AI training/courses offer]",
+      "voice": "encouraging, educational",
+      "cta": "enroll in a course or book a free intro call",
+      "route_when": "the company's team needs AI skills, or they run training, education, or upskilling campaigns"
+    },
+    "solutions": {
+      "name": "AIAJ Solutions",
+      "mailbox": "[address]@aiajsolutions.com",
+      "password_env": "PW_SOLUTIONS",
+      "offer": "[AI services/implementation offer]",
+      "voice": "professional, results-focused",
+      "cta": "book a 20-minute call",
+      "route_when": "they're launching products, scaling operations, or show signs of needing AI automation or tools"
+    },
+    "show": {
+      "name": "AI in Real Life",
+      "mailbox": "[address]@aiinreallife.com",
+      "password_env": "PW_SHOW",
+      "offer": "[show: guest spots, sponsorships, features]",
+      "voice": "conversational, story-driven",
+      "cta": "come on the show or talk sponsorship",
+      "route_when": "they have a story, launch, or expert worth featuring, or are a sponsorship fit"
+    }
+  },
+
+  "llm": {
+    "provider": "anthropic",
+    "anthropic_model": "claude-sonnet-5-5",
+    "anthropic_key_env": "ANTHROPIC_API_KEY",
+    "ollama_url": "http://localhost:11434",
+    "ollama_model": "qwen2.5:1.5b"
+  },
+
+  "limits": {
+    "max_emails_read_per_run": 50,
+    "max_outreach_per_run": 20,
+    "max_outreach_per_day_per_brand": 50,
+    "cooldown_days": 30,
+    "reply_match_days": 30,
+    "min_confidence": 0.7,
+    "send_delay_seconds": [30, 60],
+    "similarity_threshold": 0.8,
+    "max_body_chars": 6000
+  },
+
+  "auto_send": {
+    "campaign": false
+  },
+
+  "esp_domains": [
+    "mailchimp.com", "mcsv.net", "mcdlv.net", "list-manage.com", "hubspot.com",
+    "hubspotemail.net", "hs-analytics.net", "sendgrid.net", "sendgrid.com",
+    "klaviyo.com", "klaviyomail.com", "constantcontact.com", "ctctcdn.com",
+    "mailgun.org", "mailgun.net", "amazonses.com", "convertkit.com", "ck.page",
+    "substack.com", "beehiiv.com", "activecampaign.com", "campaign-archive.com",
+    "sparkpostmail.com", "mandrillapp.com", "mailerlite.com", "brevo.com",
+    "sendinblue.com", "salesforce.com", "exacttarget.com", "marketo.com",
+    "google.com", "googleusercontent.com", "gmail.com", "outlook.com",
+    "yahoo.com", "facebook.com", "instagram.com", "linkedin.com", "twitter.com",
+    "x.com", "youtube.com", "tiktok.com"
+  ]
+}
