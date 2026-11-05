@@ -1,0 +1,65 @@
+name: Email agent
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+    - cron: "43 15 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: email-agent
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify required secrets
+        env:
+          AGENT_DB_PASSPHRASE: ${{ secrets.AGENT_DB_PASSPHRASE }}
+          PW_ACADEMY: ${{ secrets.PW_ACADEMY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$AGENT_DB_PASSPHRASE" ] || [ -z "$PW_ACADEMY" ] || [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "One or more required GitHub Actions secrets are missing: AGENT_DB_PASSPHRASE, PW_ACADEMY, ANTHROPIC_API_KEY" >&2
+            exit 1
+          fi
+      - name: Restore encrypted state
+        env:
+          AGENT_DB_PASSPHRASE: ${{ secrets.AGENT_DB_PASSPHRASE }}
+        run: |
+          if [ -f agent.db.gpg ]; then
+            printf '%s' "$AGENT_DB_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --decrypt --output agent.db agent.db.gpg
+          fi
+      - name: Run
+        env:
+          PW_ACADEMY: ${{ secrets.PW_ACADEMY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ "$SCHEDULE" = "43 15 * * 1-5" ]; then
+            python3 email_agent.py report >/dev/null 2>&1 || { echo "Report command failed; details withheld because this repository is public." >&2; exit 1; }
+          else
+            python3 email_agent.py run >/dev/null 2>&1 || { echo "Agent command failed; details withheld because this repository is public." >&2; exit 1; }
+          fi
+      - name: Save state
+        if: always()
+        env:
+          AGENT_DB_PASSPHRASE: ${{ secrets.AGENT_DB_PASSPHRASE }}
+        run: |
+          git config user.name "email-agent"
+          git config user.email "email-agent@users.noreply.github.com"
+          if [ -f agent.db ] && [ -n "$AGENT_DB_PASSPHRASE" ]; then
+            printf '%s' "$AGENT_DB_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --symmetric --cipher-algo AES256 --output agent.db.gpg agent.db
+            git add agent.db.gpg
+          fi
+          if ! git diff --cached --quiet; then
+            git commit -m "Update agent state"
+            git push
+          fi
